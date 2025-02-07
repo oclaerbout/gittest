@@ -1,0 +1,41 @@
+services:
+  db:
+    image: postgres:latest
+    restart: always
+    container_name: mypostgres
+    environment:
+      POSTGRES_DB: postgres_db
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: myPass
+      PGDATA: /var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - python
+    volumes:
+      - db-data:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: pgadmin
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL:
+      PGADMIN_DEFAULT_PASSWORD:
+      PGADMIN_CONFIG_ENHANCED_COOKIE_PROTECTION: 'True'
+      PGADMIN_CONFIG_SERVER_MODE: 'True'
+    ports:
+      - "8080:80"   # Poort 8080 op de host wordt gemapt naar poort 80 van pgAdmin
+    depends_on:
+      - db
+    networks:
+      - python
+
+volumes:
+  pgdemodata:
+
+networks:
+  python:
+    external: true
+
